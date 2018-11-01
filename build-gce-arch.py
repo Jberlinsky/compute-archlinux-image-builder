@@ -60,6 +60,8 @@ def main():
 
 
 def CreateArchImage(args, aur_packages):
+  logging.info('Creating Arch Image')
+  logging.info('========================')
   image_path = os.path.join(os.getcwd(), IMAGE_FILE)
   CreateBlankImage(image_path, size_gb=int(args.size_gb), fs_type=args.fs_type)
   mount_path = utils.CreateTempDirectory(base_dir='/')
@@ -87,6 +89,7 @@ def CreateArchImage(args, aur_packages):
     image_mapping.Unmap()
   utils.Run(['parted', image_path, 'set', '1', 'boot', 'on'])
   utils.Sync()
+  logging.info('========================')
   return image_path
 
 
@@ -119,14 +122,21 @@ def ConfigureArchInstall(args, mount_path, parent_path, disk_uuid, aur_packages)
 
 
 def InstallPackagesOnHostMachine():
+  logging.info('Installing Packages')
+  logging.info('========================')
   aur_packages = []
+  logging.info('Updating Pacman database')
   utils.UpdatePacmanDatabase()
+  logging.info('Installing essential packages')
   utils.InstallPackages(SETUP_PACKAGES_ESSENTIAL)
+  logging.info('Installing packages')
   utils.InstallPackages(SETUP_PACKAGES)
+  logging.info('Updating packages')
   utils.UpdateAllPackages()
   aur_packages.append(utils.AurInstall(name='multipath-tools-git'))
   aur_packages.append(utils.AurInstall(name='zerofree'))
   aur_packages.append(utils.AurInstall(name='python2-crcmod'))
+  logging.info('========================')
   return aur_packages
 
 
